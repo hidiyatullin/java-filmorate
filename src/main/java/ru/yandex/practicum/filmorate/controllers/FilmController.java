@@ -15,7 +15,7 @@ import java.util.HashMap;
 @Slf4j
 public class FilmController {
     private HashMap<Long, Film> films = new HashMap<>();
-    final static LocalDate BORN_FILMS = LocalDate.of(1895, Month.DECEMBER, 28);
+    private final static LocalDate BORN_FILMS = LocalDate.of(1895, Month.DECEMBER, 28);
     private long filmId = 0;
 
     @GetMapping("/films")

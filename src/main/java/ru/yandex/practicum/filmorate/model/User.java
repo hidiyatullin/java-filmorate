@@ -18,14 +18,14 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
-    long id;
+    private long id;
     @NotBlank
     @Email
-    String email;
+    private String email;
     @NotBlank
-    String login;
-    String name;
+    private String login;
+    private String name;
     @Past
-    LocalDate birthday;
+    private LocalDate birthday;
 
 }
