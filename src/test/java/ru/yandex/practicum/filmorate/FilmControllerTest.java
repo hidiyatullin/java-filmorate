@@ -1,11 +1,9 @@
 package ru.yandex.practicum.filmorate;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controllers.FilmController;
-import ru.yandex.practicum.filmorate.controllers.ValidationException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -17,7 +15,7 @@ class FilmControllerTest {
 
     @Test
     void emptyName() throws Exception{
-        Film filmWithoutName = new Film(1, " ", "melodrama", LocalDate.of(1997, Month.DECEMBER, 28), 220);
+        Film filmWithoutName = new Film(1, " ", "melodrama", LocalDate.of(1997, Month.DECEMBER, 28), 220, null);
         assertThrows(ValidationException.class, () -> filmController.create(filmWithoutName));
     }
 
@@ -28,19 +26,19 @@ class FilmControllerTest {
                 "легендарного лайнера «Титаник». Герои фильма, будучи представителями различных социальных слоёв, " +
                 "влюбились друг в друга на борту лайнера, совершавшего свой первый и последний рейс через Атлантический " +
                 "океан в 1912 году. Главные роли исполнили Леонардо Ди Каприо и Кейт Уинслет.",
-                LocalDate.of(1997, Month.DECEMBER, 28), 220);
+                LocalDate.of(1997, Month.DECEMBER, 28), 220, null);
         assertThrows(ValidationException.class, () -> filmController.create(filmWithLongDescription));
     }
 
     @Test
     void wrongRelease() throws Exception {
-        Film filmWithWrongRelease = new Film(1, "Titanic", "melodrama", LocalDate.of(1800, Month.DECEMBER, 28), 220);
+        Film filmWithWrongRelease = new Film(1, "Titanic", "melodrama", LocalDate.of(1800, Month.DECEMBER, 28), 220, null);
         assertThrows(ValidationException.class, () -> filmController.create(filmWithWrongRelease));
     }
 
     @Test
     void positiveDuration() throws Exception {
-        Film filmWithWrongRelease = new Film(1, "Titanic", "melodrama", LocalDate.of(1997, Month.DECEMBER, 28), -120);
+        Film filmWithWrongRelease = new Film(1, "Titanic", "melodrama", LocalDate.of(1997, Month.DECEMBER, 28), -120, null);
         assertThrows(ValidationException.class, () -> filmController.create(filmWithWrongRelease));
     }
 
