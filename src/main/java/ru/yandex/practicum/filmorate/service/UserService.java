@@ -13,7 +13,7 @@ import java.util.Set;
 @Service
 public class UserService {
     @Autowired
-    UserStorage userStorage;
+    UserStorage userStorage = new UserStorage();
 
     public User get(long userId) {
         final User user = userStorage.get(userId);
@@ -24,7 +24,6 @@ public class UserService {
     }
 
     public User saveUser(User user) {
-        System.out.println(user.getName());
         return userStorage.saveUser(user);
     }
 

@@ -17,7 +17,7 @@ import java.util.Set;
 @RequestMapping("/users")
 public class UserController {
     @Autowired
-    UserService userService;
+    UserService userService = new UserService();
 
     @GetMapping()
     public ArrayList<User> getUsers() {
@@ -33,7 +33,6 @@ public class UserController {
     public User saveUser(@Valid @RequestBody User user) {
         validate(user);
         User saved = userService.saveUser(user);
-        System.out.println(saved.getName());
         log.info("Добавлен новый пользователь '{}'", saved.getName());
         return saved;
     }

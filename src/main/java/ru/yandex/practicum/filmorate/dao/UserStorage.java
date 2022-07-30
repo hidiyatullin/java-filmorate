@@ -24,9 +24,7 @@ public class UserStorage {
     }
 
     public User saveUser(User user) {
-        System.out.println(user.getName());
         save(user);
-//        log.info("Добавлен новый пользователь '{}'", user.getName());
         return user;
     }
 
