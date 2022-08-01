@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -59,16 +60,20 @@ public class UserService {
         }
     }
 
-    public Set<Long> getFriendsOfUser(long userId) {
-        return userStorage.getFriendsOfUser(userId);
-    }
+    public List<User> getFriendsOfUser(long userId) {
+        List<User> list = new ArrayList<User>();
+        for (long id : get(userId).getFriendIds()) {
+            list.add(get(id));
+        }
+        return list;
+     }
 
-    public Set<Long> findCommonFriends(long userId, long otherId) {
-        Set<Long> commonFriends = new HashSet<>();
-        Set<Long> userFriends = userStorage.getFriendsOfUser(userId);
-        Set<Long> otherFriends = userStorage.getFriendsOfUser(otherId);
-        for (long friend : userFriends) {
-            if (userFriends.contains(friend) && otherFriends.contains(friend)) {
+    public List<User> findCommonFriends(long userId, long otherId) {
+        List<User> commonFriends = new ArrayList<User>();
+        List<User> userFriends = new ArrayList<User>(getFriendsOfUser(userId));
+        List<User> otherFriends = new ArrayList<User>(getFriendsOfUser(otherId));
+        for (User friend : userFriends) {
+            if (otherFriends.contains(friend)) {
                 commonFriends.add(friend);
             }
         }

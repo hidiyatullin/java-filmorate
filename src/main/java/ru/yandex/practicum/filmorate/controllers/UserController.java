@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controllers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -10,6 +11,7 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Slf4j
@@ -45,30 +47,32 @@ public class UserController {
         return user;
     }
 
-    @PutMapping("/users/{userId}/friends/{friendId}")
+    @PutMapping("/{userId}/friends/{friendId}")
     public void addFriend(@PathVariable long userId, @PathVariable long friendId) {
         userService.addFriend(userId, friendId);
     }
 
-    @DeleteMapping("/users/{userId}/friends/{friendId}")
+    @DeleteMapping("/{userId}/friends/{friendId}")
     public void deleteFriend(@PathVariable long userId, @PathVariable long friendId) {
         userService.deleteFriend(userId, friendId);
     }
 
-    @GetMapping("/users/{userId}/friends")
-    public Set<Long> getFriendsOfUser(@PathVariable long userId) {
+    @GetMapping("/{userId}/friends")
+    public List<User> getFriendsOfUser(@PathVariable long userId) {
+        log.info("Получен перечень друзей пользователя " + userId + getUser(userId).getFriendIds());
         return userService.getFriendsOfUser(userId);
     }
 
-    @GetMapping("/users/{userId}/friends/common/{otherId}")
-    public Set<Long> findCommonFriends(@PathVariable long userId, @PathVariable long otherId) {
+    @GetMapping("/{userId}/friends/common/{otherId}")
+    public List<User> findCommonFriends(@PathVariable long userId, @PathVariable long otherId) {
+        log.info("Пришёл запрос на общих друзей " + userId + " и " + otherId);
         return userService.findCommonFriends(userId, otherId);
     }
 
-    public void validate(User user) throws NullPointerException{
+    public void validate(User user){
         if (user.getId() < 0) {
             log.error("ID не может быть меньше 0");
-            throw new ValidationException("invalid Id");
+            throw new NotFoundException("invalid Id");
         }
         if (user.getLogin().equals(" ")) {
             log.error("Логин должен быть без пробелов");

@@ -27,7 +27,7 @@ public class FilmStorage {
 
     public Film saveFilm(@Valid @RequestBody Film film) {
         save(film);
-        log.info("Добавлен новый пользователь '{}'", film.getName());
+        log.info("Добавлен новый фильм '{}'", film.getName());
         return film;
     }
 

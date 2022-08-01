@@ -12,6 +12,8 @@ import java.util.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+import static java.util.Collections.sort;
+
 @Service
 public class FilmService {
 
@@ -65,24 +67,30 @@ public class FilmService {
         }
     }
 
-    public ArrayList<Film> getFilmLikes(int count) {
-        int countFilms = 10;
+    public List<Film> getFilmLikes(int count) {
+        int countFilms = 9;
         if (count > 0) {
-            countFilms = count;
+            countFilms = count - 1;
         }
-        ArrayList<Film> films = filmStorage.getFilms();
-        ArrayList<Film> sortedFilms = null;
-        Collections.sort(films, comparator);
-        for (int i = 0; i < countFilms; i++) {
-            sortedFilms.add(films.get(i));
+        List<Film> films = filmStorage.getFilms();
+        List<Film> sortedFilms = new ArrayList<>();
+        Collections.sort(films, new Comparator<Film>() {
+            @Override
+            public int compare(Film o1, Film o2) {
+                return o2.getUserIds().size() - o1.getUserIds().size();
+            }
+        });
+        if (countFilms > films.size()) {
+            countFilms = films.size() - 1;
+        }
+        if (countFilms == 0) {
+            sortedFilms.add(films.get(0));
+        } else {
+            for (int i = 0; i <= countFilms; i++) {
+                sortedFilms.add(films.get(i));
+            }
         }
         return sortedFilms;
     }
 
-    Comparator<Film> comparator = new Comparator<Film>() {
-        @Override
-        public int compare(Film o1, Film o2) {
-            return o1.getUserIds().size() - o2.getUserIds().size();
-        }
-    };
 }

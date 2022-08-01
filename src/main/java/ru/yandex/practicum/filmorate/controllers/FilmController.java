@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controllers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -38,28 +40,28 @@ public class FilmController {
     public Film create(@Valid @RequestBody Film film) {
         validate(film);
         Film saved = filmService.save(film);
-        log.info("Добавлен новый фильм '{}'",saved.getName());
+        log.info("Добавлен новый фильм '{}'", saved.getName());
         return saved;
     }
 
     private void validate(Film film) {
-        if(film.getDescription().length() > 200) {
+        if (film.getDescription().length() > 200) {
             log.error("Введено слишком длинное описание");
             throw new ValidationException("invalid description");
         }
-        if(film.getReleaseDate().isBefore(BORN_FILMS)) {
+        if (film.getReleaseDate().isBefore(BORN_FILMS)) {
             log.error("Указана дата выпуска фильма раньше Дня рождения кино");
             throw new ValidationException("invalid birthday");
         }
-        if(film.getId() < 0) {
+        if (film.getId() < 0) {
             log.error("ID не может быть меньше 0");
-            throw new ValidationException("invalid Id");
+            throw new NotFoundException("invalid Id");
         }
-        if(film.getName().isBlank()) {
+        if (film.getName().isBlank()) {
             log.error("Фильм должен быть с названием");
             throw new ValidationException("invalid name of film");
         }
-        if(film.getDuration() < 0) {
+        if (film.getDuration() < 0) {
             log.error("Продолжительность фильма не может быть меньше 0");
             throw new ValidationException("invalid duration");
         }
@@ -84,8 +86,9 @@ public class FilmController {
         filmService.deleteLike(filmId, userId);
     }
 
-    @GetMapping("/popular?count={count}")
-    public ArrayList<Film> getFilmLikes(@PathVariable int count) {
+    @GetMapping("/popular")
+    public List<Film> getPopular(@RequestParam(value = "count", defaultValue = "10", required = false) Integer count) {
+        log.info("Запрос на вывод " + count + " самых популярных фильмов");
         return filmService.getFilmLikes(count);
     }
 }
