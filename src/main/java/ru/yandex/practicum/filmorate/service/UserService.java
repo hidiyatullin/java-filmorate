@@ -2,61 +2,60 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dao.UserStorage;
+import ru.yandex.practicum.filmorate.dao.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     @Autowired
-    UserStorage userStorage = new UserStorage();
+    private InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
 
     public User get(long userId) {
-        final User user = userStorage.get(userId);
+        final User user = inMemoryUserStorage.get(userId);
         if (user == null) {
             throw new NotFoundException("User with id=" + userId + " not found");
         }
-        return userStorage.get(userId);
+        return inMemoryUserStorage.get(userId);
     }
 
     public User saveUser(User user) {
-        return userStorage.saveUser(user);
+        return inMemoryUserStorage.saveUser(user);
     }
 
-    public ArrayList<User> getUsers() {
-        return userStorage.getUsers();
+    public List<User> getUsers() {
+        return inMemoryUserStorage.getUsers();
     }
 
     public void update(User user) {
-        userStorage.update(user);
+        inMemoryUserStorage.update(user);
     }
 
     public void addFriend(long userId, long friendId) {
-        if (userStorage.get(userId) == null) {
+        if (inMemoryUserStorage.get(userId) == null) {
             throw new NotFoundException("User with id=" + userId + " not found");
-        } else if (userStorage.get(friendId) == null) {
+        } else if (inMemoryUserStorage.get(friendId) == null) {
             throw new NotFoundException("User with id=" + friendId + " not found");
         } else {
-            User user = userStorage.get(userId);
-            User friend = userStorage.get(friendId);
-            userStorage.addFriend(user, friend);
+            User user = inMemoryUserStorage.get(userId);
+            User friend = inMemoryUserStorage.get(friendId);
+            inMemoryUserStorage.addFriend(user, friend);
         }
     }
 
     public void deleteFriend(long userId, long friendId) {
-        if (userStorage.get(userId) == null) {
+        if (inMemoryUserStorage.get(userId) == null) {
             throw new NotFoundException("User with id=" + userId + " not found");
-        } else if (userStorage.get(friendId) == null) {
+        } else if (inMemoryUserStorage.get(friendId) == null) {
             throw new NotFoundException("User with id=" + friendId + " not found");
         } else {
-            User user = userStorage.get(userId);
-            User friend = userStorage.get(friendId);
-            userStorage.deleteFriend(user, friend);
+            User user = inMemoryUserStorage.get(userId);
+            User friend = inMemoryUserStorage.get(friendId);
+            inMemoryUserStorage.deleteFriend(user, friend);
         }
     }
 
@@ -69,14 +68,10 @@ public class UserService {
      }
 
     public List<User> findCommonFriends(long userId, long otherId) {
-        List<User> commonFriends = new ArrayList<User>();
-        List<User> userFriends = new ArrayList<User>(getFriendsOfUser(userId));
-        List<User> otherFriends = new ArrayList<User>(getFriendsOfUser(otherId));
-        for (User friend : userFriends) {
-            if (otherFriends.contains(friend)) {
-                commonFriends.add(friend);
-            }
-        }
-        return commonFriends;
+        List<User> userFriends = getFriendsOfUser(userId);
+        List<User> otherFriends = getFriendsOfUser(otherId);
+        return userFriends.stream()
+                .filter(user -> otherFriends.contains(user))
+                .collect(Collectors.toList());
     }
 }

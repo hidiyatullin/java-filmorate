@@ -19,10 +19,10 @@ import java.util.Set;
 @RequestMapping("/users")
 public class UserController {
     @Autowired
-    UserService userService = new UserService();
+    private UserService userService = new UserService();
 
     @GetMapping()
-    public ArrayList<User> getUsers() {
+    public List<User> getUsers() {
         return userService.getUsers();
     }
 

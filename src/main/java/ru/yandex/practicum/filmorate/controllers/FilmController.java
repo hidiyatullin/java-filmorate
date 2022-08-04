@@ -22,7 +22,7 @@ import java.util.List;
 public class FilmController {
 
     @Autowired
-    FilmService filmService;
+    private FilmService filmService;
 
     private final static LocalDate BORN_FILMS = LocalDate.of(1895, Month.DECEMBER, 28);
 
