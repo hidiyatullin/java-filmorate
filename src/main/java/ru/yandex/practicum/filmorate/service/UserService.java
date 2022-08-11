@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dao.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.dao.UserStorage;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -13,49 +13,49 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     @Autowired
-    private InMemoryUserStorage inMemoryUserStorage = new InMemoryUserStorage();
+    private UserStorage userStorage;
 
     public User get(long userId) {
-        final User user = inMemoryUserStorage.get(userId);
+        final User user = userStorage.get(userId);
         if (user == null) {
             throw new NotFoundException("User with id=" + userId + " not found");
         }
-        return inMemoryUserStorage.get(userId);
+        return userStorage.get(userId);
     }
 
     public User saveUser(User user) {
-        return inMemoryUserStorage.saveUser(user);
+        return userStorage.saveUser(user);
     }
 
     public List<User> getUsers() {
-        return inMemoryUserStorage.getUsers();
+        return userStorage.getUsers();
     }
 
     public void update(User user) {
-        inMemoryUserStorage.update(user);
+        userStorage.update(user);
     }
 
     public void addFriend(long userId, long friendId) {
-        if (inMemoryUserStorage.get(userId) == null) {
+        if (userStorage.get(userId) == null) {
             throw new NotFoundException("User with id=" + userId + " not found");
-        } else if (inMemoryUserStorage.get(friendId) == null) {
+        } else if (userStorage.get(friendId) == null) {
             throw new NotFoundException("User with id=" + friendId + " not found");
         } else {
-            User user = inMemoryUserStorage.get(userId);
-            User friend = inMemoryUserStorage.get(friendId);
-            inMemoryUserStorage.addFriend(user, friend);
+            User user = userStorage.get(userId);
+            User friend = userStorage.get(friendId);
+            userStorage.addFriend(user, friend);
         }
     }
 
     public void deleteFriend(long userId, long friendId) {
-        if (inMemoryUserStorage.get(userId) == null) {
+        if (userStorage.get(userId) == null) {
             throw new NotFoundException("User with id=" + userId + " not found");
-        } else if (inMemoryUserStorage.get(friendId) == null) {
+        } else if (userStorage.get(friendId) == null) {
             throw new NotFoundException("User with id=" + friendId + " not found");
         } else {
-            User user = inMemoryUserStorage.get(userId);
-            User friend = inMemoryUserStorage.get(friendId);
-            inMemoryUserStorage.deleteFriend(user, friend);
+            User user = userStorage.get(userId);
+            User friend = userStorage.get(friendId);
+            userStorage.deleteFriend(user, friend);
         }
     }
 

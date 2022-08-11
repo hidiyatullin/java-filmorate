@@ -14,6 +14,7 @@ public class InMemoryUserStorage implements UserStorage {
     private Map<Long, User> users = new HashMap<>();
     private long userId = 0;
 
+    @Override
     public User get(long userId) {
         return users.get(userId);
     }
@@ -30,6 +31,7 @@ public class InMemoryUserStorage implements UserStorage {
         users.put(user.getId(), user);
     }
 
+    @Override
     public List<User> getUsers() {
         return new ArrayList<>(users.values());
     }
@@ -54,6 +56,7 @@ public class InMemoryUserStorage implements UserStorage {
         }
     }
 
+    @Override
     public void addFriend(User user, User friend) {
         user.getFriendIds().add(friend.getId());
         log.info("Добавлен друг " + friend.getId() + "пользователю " + user.getId());
@@ -61,6 +64,7 @@ public class InMemoryUserStorage implements UserStorage {
         log.info("Добавлен пользователь " + user.getId() + "другу " + friend.getId());
     }
 
+    @Override
     public void deleteFriend(User user, User friend) {
         user.getFriendIds().remove(friend.getId());
         log.info("Удален друг " + friend.getId() + "пользователя" + user.getId());

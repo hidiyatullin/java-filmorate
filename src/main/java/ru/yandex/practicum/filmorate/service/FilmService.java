@@ -2,8 +2,8 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dao.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.dao.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.dao.FilmStorage;
+import ru.yandex.practicum.filmorate.dao.UserStorage;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
@@ -19,52 +19,52 @@ import static java.util.Collections.sort;
 public class FilmService {
 
     @Autowired
-    private InMemoryFilmStorage inMemoryFilmStorage;
+    private FilmStorage filmStorage;
 
     @Autowired
-    private InMemoryUserStorage inMemoryUserStorage;
+    private UserStorage userStorage;
 
     public Film get(long filmId) {
-        final Film film = inMemoryFilmStorage.get(filmId);
+        final Film film = filmStorage.get(filmId);
         if (film == null) {
             throw new NotFoundException("Film with id=" + filmId + " not found");
         }
-        return inMemoryFilmStorage.get(filmId);
+        return filmStorage.get(filmId);
     }
 
     public Film save(Film film) {
-        return inMemoryFilmStorage.saveFilm(film);
+        return filmStorage.saveFilm(film);
     }
 
     public ArrayList<Film> getFilms() {
-        return inMemoryFilmStorage.getFilms();
+        return filmStorage.getFilms();
     }
 
     public void update(Film film) {
-        inMemoryFilmStorage.update(film);
+        filmStorage.update(film);
     }
 
     public void addLike(long filmId, long userId) {
-        if (inMemoryUserStorage.get(userId) == null) {
+        if (userStorage.get(userId) == null) {
             throw new NotFoundException("User with id=" + userId + " not found");
-        } else if (inMemoryFilmStorage.get(filmId) == null) {
+        } else if (filmStorage.get(filmId) == null) {
             throw new NotFoundException("Film with id=" + filmId + " not found");
         } else {
-            Film film = inMemoryFilmStorage.get(filmId);
-            User user = inMemoryUserStorage.get(userId);
-            inMemoryFilmStorage.addLike(film, user);
+            Film film = filmStorage.get(filmId);
+            User user = userStorage.get(userId);
+            filmStorage.addLike(film, user);
         }
     }
 
     public void deleteLike(long filmId, long userId) {
-        if (inMemoryUserStorage.get(userId) == null) {
+        if (userStorage.get(userId) == null) {
             throw new NotFoundException("User with id=" + userId + " not found");
-        } else if (inMemoryFilmStorage.get(filmId) == null) {
+        } else if (filmStorage.get(filmId) == null) {
             throw new NotFoundException("Film with id=" + filmId + " not found");
         } else {
-            User user = inMemoryUserStorage.get(userId);
-            Film film = inMemoryFilmStorage.get(filmId);
-            inMemoryFilmStorage.deleteLike(film, user);
+            User user = userStorage.get(userId);
+            Film film = filmStorage.get(filmId);
+            filmStorage.deleteLike(film, user);
         }
     }
 
@@ -76,7 +76,7 @@ public class FilmService {
     };
 
     public List<Film> getFilmLikes(int count) {
-        List<Film> films = inMemoryFilmStorage.getFilms();
+        List<Film> films = filmStorage.getFilms();
         Collections.sort(films, comparator);
         return films.stream()
                 .limit(count)
