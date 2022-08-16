@@ -27,7 +27,7 @@ public class FilmController {
     private final static LocalDate BORN_FILMS = LocalDate.of(1895, Month.DECEMBER, 28);
 
     @GetMapping()
-    public ArrayList<Film> getFilms() {
+    public List<Film> getFilms() {
         return filmService.getFilms();
     }
 
