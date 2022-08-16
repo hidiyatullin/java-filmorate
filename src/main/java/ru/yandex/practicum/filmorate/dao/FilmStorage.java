@@ -15,7 +15,7 @@ public interface FilmStorage {
 
     void update(Film film);
 
-    ArrayList<Film> getFilms();
+    List<Film> getFilms();
 
     void addLike(Film film, User user);
 

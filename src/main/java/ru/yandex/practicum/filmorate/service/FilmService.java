@@ -36,7 +36,7 @@ public class FilmService {
         return filmStorage.saveFilm(film);
     }
 
-    public ArrayList<Film> getFilms() {
+    public List<Film> getFilms() {
         return filmStorage.getFilms();
     }
 
