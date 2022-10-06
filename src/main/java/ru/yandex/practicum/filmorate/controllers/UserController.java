@@ -10,15 +10,14 @@ import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    @Autowired
+    @Autowired // это остаётся при подключении БД?
     private UserService userService = new UserService();
 
     @GetMapping()
@@ -27,14 +26,14 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    User getUser(@PathVariable long userId) {
-        return userService.get(userId);
+    Optional<User> getUserById(@PathVariable long userId) {
+        return userService.getUserById(userId);
     }
 
     @PostMapping()
-    public User saveUser(@Valid @RequestBody User user) {
+    public User create(@Valid @RequestBody User user) {
         validate(user);
-        User saved = userService.saveUser(user);
+        User saved = userService.create(user);
         log.info("Добавлен новый пользователь '{}'", saved.getName());
         return saved;
     }
@@ -59,7 +58,7 @@ public class UserController {
 
     @GetMapping("/{userId}/friends")
     public List<User> getFriendsOfUser(@PathVariable long userId) {
-        log.info("Получен перечень друзей пользователя " + userId + getUser(userId).getFriendIds());
+        log.info("Получен перечень друзей пользователя " + userId);
         return userService.getFriendsOfUser(userId);
     }
 

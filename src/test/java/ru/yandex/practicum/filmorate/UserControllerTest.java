@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controllers.UserController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -24,7 +23,7 @@ class UserControllerTest {
     @Test
     void wrongBirthday() throws Exception {
         User userWrongBirthday = new User(1, "1@mail.ru", "1", "Mike", LocalDate.of(2200, Month.DECEMBER, 28), null);
-        assertThrows(ValidationException.class, () -> userController.saveUser(userWrongBirthday));
+        assertThrows(ValidationException.class, () -> userController.create(userWrongBirthday));
     }
 
 //    @Test
@@ -36,7 +35,7 @@ class UserControllerTest {
     @Test
     void wrongLogin() throws Exception {
         User userWrongBirthday = new User(1, "1@mail.ru", " ", "Mike", LocalDate.of(2000, Month.DECEMBER, 28), null);
-        assertThrows(ValidationException.class, () -> userController.saveUser(userWrongBirthday));
+        assertThrows(ValidationException.class, () -> userController.create(userWrongBirthday));
     }
 
 }
