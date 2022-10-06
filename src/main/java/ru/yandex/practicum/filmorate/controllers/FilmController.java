@@ -12,6 +12,7 @@ import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -29,7 +30,7 @@ public class FilmController {
     }
 
     @GetMapping("/{filmId}")
-    public Film getFilm(@PathVariable long filmId) {
+    public Optional<Film> getFilm(@PathVariable long filmId) {
         return filmService.getById(filmId);
     }
 
