@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 public class UserService {
     @Autowired
     private UserDao userDao;
+    @Autowired
     private FriendDao friendDao;
 
     public Optional<User> getUserById(long userId) {
@@ -44,8 +45,8 @@ public class UserService {
         } else if (userDao.getUserById(friendId) == null) {
             throw new NotFoundException("User with id=" + friendId + " not found");
         } else {
-//            userDao.getUserById(userId); // для чего эти методы? Для проверки наличия данных?
-//            userDao.getUserById(friendId);
+            userDao.getUserById(userId); // для чего эти методы? Для проверки наличия данных?
+            userDao.getUserById(friendId);
             friendDao.addFriend(userId, friendId);
         }
     }
@@ -56,8 +57,8 @@ public class UserService {
         } else if (userDao.getUserById(friendId) == null) {
             throw new NotFoundException("User with id=" + friendId + " not found");
         } else {
-//            User user = userDao.getUserById(userId);
-//            User friend = userDao.getUserById(friendId);
+            userDao.getUserById(userId);
+            userDao.getUserById(friendId);
             friendDao.deleteFriend(userId, friendId);
         }
     }
