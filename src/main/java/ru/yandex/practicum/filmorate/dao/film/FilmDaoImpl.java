@@ -1,12 +1,15 @@
 package ru.yandex.practicum.filmorate.dao.film;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
+import ru.yandex.practicum.filmorate.dao.genre.GenreDao;
+import ru.yandex.practicum.filmorate.dao.genre.GenreDaoImpl;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -23,11 +26,9 @@ import java.util.*;
 @Component
 public class FilmDaoImpl implements FilmDao {
 
-//    private Map<Long, Film> films = new HashMap<>();
-//    private final static LocalDate BORN_FILMS = LocalDate.of(1895, Month.DECEMBER, 28);
-//    private long filmId = 0;
-
+    @Autowired
     private JdbcTemplate jdbcTemplate;
+    private GenreDao genreDao;
 
     @Override
     public Optional<Film> getById(long filmId) {
@@ -93,7 +94,7 @@ public class FilmDaoImpl implements FilmDao {
                 film.getDuration(),
                 film.getId());
         if (film.getGenres() != null) {
-            deleteGenre(film.getId());
+            deleteGenreFromFilm(film.getId());
             for (Genre genre : film.getGenres()) {
                 String sqlGenre = "MERGE INTO film_genres(genre_id, film_id) VALUES (?, ?)"; // ???
                 jdbcTemplate.update(sqlGenre, genre.getId(), film.getId());
@@ -103,7 +104,7 @@ public class FilmDaoImpl implements FilmDao {
         return getById(film.getId());
     }
 
-    static Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
+    private static Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
         return Film.builder()
                 .id(rs.getInt("films.id"))
                 .mpa(new Mpa(
@@ -136,7 +137,7 @@ public class FilmDaoImpl implements FilmDao {
         }
     }
 
-    private void deleteGenre(long filmId) {
+    private void deleteGenreFromFilm(long filmId) {
         String sqlDeleteGenre = "DELETE FROM film_genres WHERE film_id = ?";
         jdbcTemplate.update(sqlDeleteGenre, filmId);
     }
@@ -154,5 +155,20 @@ public class FilmDaoImpl implements FilmDao {
                 "ORDER BY films.rate DESC " +
                 "LIMIT ?";
         return jdbcTemplate.query(sql, FilmDaoImpl::makeFilm, count);
+    }
+
+    @Override
+    public List<Genre> getFilmGenres(long filmId) {
+        String sql = "SELECT * FROM film_genres WHERE film_id = ?";
+        List<Long> filmsGenreList = jdbcTemplate.query(sql, FilmDaoImpl::makeFilmGenres, filmId);
+        List<Genre> genresOfFilm = new ArrayList<>();
+        for (long genreId : filmsGenreList) {
+            genresOfFilm.add(genreDao.getById(genreId).get());
+        }
+        return genresOfFilm;
+    }
+
+    private static long makeFilmGenres(ResultSet rs, int rowNum) throws SQLException {
+        return rs.getLong("genre_id");
     }
 }

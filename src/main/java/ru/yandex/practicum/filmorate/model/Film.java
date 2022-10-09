@@ -19,7 +19,7 @@ public class Film {
     private LocalDate releaseDate;
     private List<Genre> genres;
     private Mpa mpa;
-    private int rate; // он ещё нужен?
+    private int rate;
     @Positive
     private int duration;
     @JsonIgnore

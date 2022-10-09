@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.dao.film;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
@@ -17,7 +18,7 @@ public interface FilmDao {
 
     List<Film> getFilms();
 
-//    void delete(long id); //удаление фильма не было
+    List<Genre> getFilmGenres(long filmId);
 
     List<Film> getPopular(int count);
 

@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.film.FilmDao;
 import ru.yandex.practicum.filmorate.dao.genre.GenreDao;
 import ru.yandex.practicum.filmorate.dao.like.LikeDao;
+import ru.yandex.practicum.filmorate.dao.user.UserDao;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.*;
@@ -16,17 +18,18 @@ import static java.util.Collections.sort;
 public class FilmService {
 
 
-//    @Autowired
+    @Autowired
     private final FilmDao filmDao;
     private final GenreDao genreDao;
     private final LikeDao likeDao;
-    private final UserService userService;
+    private final UserDao userDao;
+//    private final UserService userService;
 
 
     public List<Film> getFilms() {
         List<Film> filmsList = filmDao.getFilms();
         for (Film film : filmsList) {
-            film.setGenres(genreDao.getFilmGenres(film.getId()));
+            film.setGenres(filmDao.getFilmGenres(film.getId()));
         }
         return filmsList;
     }
@@ -36,16 +39,14 @@ public class FilmService {
     }
 
     public Optional<Film> update(Film film) {
-        /*Film updatedFilm = filmDao.update(film);*/
         Optional<Film> updatedFilm = filmDao.update(film);
-        updatedFilm.get().setGenres(genreDao.getFilmGenres(film.getId()));
+        updatedFilm.get().setGenres(filmDao.getFilmGenres(film.getId()));
         return updatedFilm;
     }
 
     public Optional<Film> getById(long id) {
-        /*Film film = filmDao.getById(id);*/
         Optional<Film> film = filmDao.getById(id);
-        film.get().setGenres(genreDao.getFilmGenres(id));
+        film.get().setGenres(filmDao.getFilmGenres(id));
         return film;
     }
 
@@ -54,16 +55,13 @@ public class FilmService {
     }
 
     public void deleteLike(long filmId, long userId) {
-        //userService.getById(userId); // не понимаю какую функцию выполняет. Проверка наличия данных?
+        userDao.getUserById(userId);
+        filmDao.getById(filmId);
         likeDao.deleteLike(filmId, userId);
     }
 
     public List<Film> getPopular(int count) {
         return filmDao.getPopular(count);
     }
-
-//    public void delete(long id) { // метода удаления не было изначально
-//        filmDao.delete(id);
-//    }
 
 }

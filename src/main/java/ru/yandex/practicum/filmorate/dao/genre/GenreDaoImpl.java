@@ -40,24 +40,10 @@ public class GenreDaoImpl implements GenreDao {
         }
     }
 
-    @Override
-    public List<Genre> getFilmGenres(long filmId) {
-        String sql = "SELECT * FROM film_genres WHERE film_id = ?";
-        List<Long> filmsGenreList = jdbcTemplate.query(sql, GenreDaoImpl::makeFilmGenres, filmId);
-        List<Genre> genresOfFilm = new ArrayList<>();
-        for (long genreId : filmsGenreList) {
-            genresOfFilm.add(getById(genreId).get());
-        }
-        return genresOfFilm;
-    }
-
     static Genre makeGenre(ResultSet rs, int rowNum) throws SQLException {
         return new Genre(
                 rs.getInt("id"),
                 rs.getString("name"));
     }
 
-    static long makeFilmGenres(ResultSet rs, int rowNum) throws SQLException {
-        return rs.getLong("genre_id");
-    }
 }

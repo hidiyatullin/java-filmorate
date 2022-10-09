@@ -19,7 +19,7 @@ import java.util.Optional;
 @RequestMapping("/films")
 public class FilmController {
 
-    @Autowired // это остаётся при подключении БД?
+    @Autowired
     private FilmService filmService;
 
     private final static LocalDate BORN_FILMS = LocalDate.of(1895, Month.DECEMBER, 28);
