@@ -50,9 +50,9 @@ public class FriendDaoImpl implements FriendDao {
         jdbcTemplate.update(sql, userId, friendId);
     }
 
-    static User makeUser(ResultSet rs, int rowNum) throws SQLException { // проверить реализацию, не полный запрос по конструктору
+    static User makeUser(ResultSet rs, int rowNum) throws SQLException {
         return new User(
-                rs.getInt("id"),
+                rs.getLong("id"),
                 rs.getString("email"),
                 rs.getString("login"),
                 rs.getString("name"),

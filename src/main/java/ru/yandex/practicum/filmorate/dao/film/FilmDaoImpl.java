@@ -21,6 +21,7 @@ import java.sql.Date;
 import javax.validation.Valid;
 import java.sql.PreparedStatement;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -28,6 +29,7 @@ public class FilmDaoImpl implements FilmDao {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
     private GenreDao genreDao;
 
     @Override
@@ -54,9 +56,9 @@ public class FilmDaoImpl implements FilmDao {
     public Film create(@Valid @RequestBody Film film) {
         String sql = "INSERT INTO films(rating_id, name, description, releaseDate, duration) " +
                 "VALUES (?, ?, ?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder(); // что такое keyHolder?
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement stmt = connection.prepareStatement(sql, new String[]{"id"}); // что такое preparedStatement?
+            PreparedStatement stmt = connection.prepareStatement(sql, new String[]{"id"});
             stmt.setLong(1, film.getMpa().getId());
             stmt.setString(2, film.getName());
             stmt.setString(3, film.getDescription());
@@ -93,20 +95,15 @@ public class FilmDaoImpl implements FilmDao {
                 film.getReleaseDate(),
                 film.getDuration(),
                 film.getId());
-        if (film.getGenres() != null) {
-            deleteGenreFromFilm(film.getId());
-            for (Genre genre : film.getGenres()) {
-                String sqlGenre = "MERGE INTO film_genres(genre_id, film_id) VALUES (?, ?)"; // ???
-                jdbcTemplate.update(sqlGenre, genre.getId(), film.getId());
-            }
-        }
+        deleteGenreFromFilm(film.getId());
+        addGenre(film);
         log.info("Фильм {} обновлен. Новые данные {}", film.getName(), film);
         return getById(film.getId());
     }
 
     private static Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
         return Film.builder()
-                .id(rs.getInt("films.id"))
+                .id(rs.getLong("films.id"))
                 .mpa(new Mpa(
                         rs.getInt("rating.id"),
                         rs.getString("rating.name")))
@@ -125,8 +122,8 @@ public class FilmDaoImpl implements FilmDao {
                 jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
                     @Override
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        ps.setInt(1, Math.toIntExact(genre.getId()));
-                        ps.setInt(2, Math.toIntExact(film.getId()));
+                        ps.setLong(1, Math.toIntExact(genre.getId()));
+                        ps.setLong(2, Math.toIntExact(film.getId()));
                     }
                     @Override
                     public int getBatchSize() {
@@ -141,12 +138,6 @@ public class FilmDaoImpl implements FilmDao {
         String sqlDeleteGenre = "DELETE FROM film_genres WHERE film_id = ?";
         jdbcTemplate.update(sqlDeleteGenre, filmId);
     }
-
-//    @Override
-//    public void delete(long id) {
-//        String sql = "DELETE FROM films WHERE id = ?";
-//        jdbcTemplate.update(sql, id);
-//    } // удаление фильма не было
 
     @Override
     public List<Film> getPopular(int count) {
@@ -171,4 +162,5 @@ public class FilmDaoImpl implements FilmDao {
     private static long makeFilmGenres(ResultSet rs, int rowNum) throws SQLException {
         return rs.getLong("genre_id");
     }
+
 }

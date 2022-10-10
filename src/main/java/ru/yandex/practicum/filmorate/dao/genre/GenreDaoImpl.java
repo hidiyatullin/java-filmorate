@@ -29,9 +29,7 @@ public class GenreDaoImpl implements GenreDao {
         String sql = "SELECT * FROM genres WHERE id = ?";
         List<Genre> genreList = jdbcTemplate.query(sql, GenreDaoImpl::makeGenre, id);
         if(!genreList.isEmpty()) {
-            Genre genre = genreList.stream()
-                    .findFirst()
-                    .get();
+            Genre genre = genreList.stream().findFirst().get();
             log.info("Найден жанр: {} {}", genre.getId(), genre.getName());
             return Optional.of(genre);
         } else {
@@ -42,7 +40,7 @@ public class GenreDaoImpl implements GenreDao {
 
     static Genre makeGenre(ResultSet rs, int rowNum) throws SQLException {
         return new Genre(
-                rs.getInt("id"),
+                rs.getLong("id"),
                 rs.getString("name"));
     }
 

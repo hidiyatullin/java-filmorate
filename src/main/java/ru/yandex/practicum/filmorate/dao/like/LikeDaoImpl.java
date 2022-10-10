@@ -27,7 +27,7 @@ public class LikeDaoImpl implements LikeDao {
         updateRate(filmId);
     }
 
-    private void updateRate(long filmId) { // что тут происходит?
+    private void updateRate(long filmId) {
         String sqlQuery = "UPDATE films f " +
                 "set f.rate = (SELECT count(l.user_id) FROM film_likes l WHERE l.film_id = f.id) " +
                 "WHERE id = ?";
