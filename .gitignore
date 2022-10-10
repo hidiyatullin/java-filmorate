@@ -42,3 +42,6 @@ build/
 
 ### VS Code ###
 .vscode/
+/db/filmorate.mv.db
+/db/filmorate.trace.db
+

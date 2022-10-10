@@ -6,15 +6,13 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -32,14 +30,14 @@ public class FilmController {
     }
 
     @GetMapping("/{filmId}")
-    public Film getFilm(@PathVariable long filmId) {
-        return filmService.get(filmId);
+    public Optional<Film> getFilm(@PathVariable long filmId) {
+        return filmService.getById(filmId);
     }
 
     @PostMapping()
     public Film create(@Valid @RequestBody Film film) {
         validate(film);
-        Film saved = filmService.save(film);
+        Film saved = filmService.create(film);
         log.info("Добавлен новый фильм '{}'", saved.getName());
         return saved;
     }
@@ -89,7 +87,7 @@ public class FilmController {
     @GetMapping("/popular")
     public List<Film> getPopular(@RequestParam(value = "count", defaultValue = "10", required = false) Integer count) {
         log.info("Запрос на вывод " + count + " самых популярных фильмов");
-        return filmService.getFilmLikes(count);
+        return filmService.getPopular(count);
     }
 }
 
